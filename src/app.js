@@ -1,5 +1,24 @@
-import exportDefaultTest, { add, sub } from "./module";
+import { getResponse } from "./http";
 
-console.log(exportDefaultTest(20, 10));
-console.log(add(20, 10));
-console.log(sub(20, 10));
+const NEWS_URL = "https://api.hnpwa.com/v0/news/1.json";
+const CONTENTS_URL = "https://api.hnpwa.com/v0/item/@id.json";
+const root = document.querySelector("#root");
+
+const newsPeed = getResponse("GET", NEWS_URL, false);
+
+const createEl = () => {
+  const ui = document.createElement("ul");
+
+  for (let i = 0; i < newsPeed.length; i++) {
+    ui.innerHTML += `
+      <li>
+        <a href="#${newsPeed[i].id}">
+          ${newsPeed[i].title}
+        </a>
+      </li>
+    `;
+  }
+
+  root.appendChild(ui);
+};
+createEl();
