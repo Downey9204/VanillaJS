@@ -6,7 +6,7 @@
 
 # bundler
 /dist
-/.cache
+/.parcel-cache
 
 # misc
 .DS_Store
