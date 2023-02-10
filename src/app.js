@@ -10,28 +10,38 @@ const content = document.createElement("section");
 /** Init when load is complete */
 window.addEventListener("load", init);
 /** Display content when hash is changed */
-window.addEventListener("hashchange", createContent);
+window.addEventListener("hashchange", setRoute);
 
 /** Init */
 function init() {
-  const newsFeed = ajax("GET", NEWS_URL.replace("@page", "1"), false);
-  createFeed(newsFeed);
+  createFeed();
+}
 
-  app.appendChild(content);
-  app.appendChild(feed);
+/** Setting Router */
+function setRoute() {
+  const path = location.hash;
+
+  if (path === "") createFeed();
+  else createContent();
 }
 
 /** Create Feed */
-function createFeed(newsFeed) {
-  for (let i = 0; i < newsFeed.length; i++) {
-    const item = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = `#${newsFeed[i].id}`;
-    a.textContent = newsFeed[i].title;
+function createFeed() {
+  const newsFeed = ajax("GET", NEWS_URL.replace("@page", "1"), false);
 
-    item.appendChild(a);
-    feed.appendChild(item);
-  }
+  feed.innerHTML = newsFeed
+    .map((item) => {
+      return `
+        <li>
+          <a href="#${item.id}">
+            ${item.title}
+          </a>
+        </li>
+        `;
+    })
+    .join("");
+
+  app.innerHTML = feed.innerHTML;
 }
 
 /** Create Content */
@@ -39,8 +49,10 @@ function createContent() {
   const id = location.hash.substring(1);
   const newsContent = ajax("GET", CONTENT_URL.replace("@id", id), false);
 
-  const title = document.createElement("h1");
-  title.textContent = newsContent.title;
+  content.innerHTML = `
+    <h1>${newsContent.title}</h1>
+    <a href="#">To List</a>
+  `;
 
-  content.innerHTML = title.innerHTML;
+  app.innerHTML = content.innerHTML;
 }
